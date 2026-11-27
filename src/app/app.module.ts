@@ -23,6 +23,10 @@ import { SignupComponent } from './signup/signup.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { LoginComponent } from './login/login.component';
 
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
 import {
   NgxUiLoaderModule,
   NgxUiLoaderConfig,
@@ -31,6 +35,7 @@ import {
 } from 'ngx-ui-loader';
 
 import { TokenInterceptorInterceptor } from './services/token-interceptor.interceptor';
+import { ViewBillComponent } from './material-component/view-bill/view-bill.component';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   text: "Loading...",
@@ -55,7 +60,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     AppSidebarComponent,
     SignupComponent,
     ForgotPasswordComponent,
-    LoginComponent
+    LoginComponent,
   ],
 
   imports: [
@@ -68,7 +73,10 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     FlexLayoutModule,
     SharedModule,
     HttpClientModule,
-    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)
+    NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),
+    MatIconModule,
+    MatCardModule,
+    MatFormFieldModule
   ],
 
   providers: [

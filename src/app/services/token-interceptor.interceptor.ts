@@ -26,10 +26,6 @@ export class TokenInterceptorInterceptor implements HttpInterceptor {
 
     const token = localStorage.getItem('token');
 
-    console.log('========================');
-    console.log('Request URL:', request.url);
-    console.log('Token:', token);
-
     if (token) {
 
       request = request.clone({
@@ -38,7 +34,6 @@ export class TokenInterceptorInterceptor implements HttpInterceptor {
         }
       });
 
-      console.log('Authorization Header Added');
     }
     else {
       console.log('No Token Found');

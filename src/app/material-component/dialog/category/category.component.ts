@@ -1,93 +1,142 @@
-import { Component, Inject, OnInit, Output } from '@angular/core';
+
+import { Component, Inject, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
 import { CategoryService } from 'src/app/services/category.service';
 import { SnackbarService } from 'src/app/services/snackbar.service';
-import { EventEmitter } from '@angular/core';
 import { GlobalConstants } from 'src/app/shared/global-constants';
 
 @Component({
   selector: 'app-category',
   templateUrl: './category.component.html',
-  styleUrls: ['./category.component.scss'],
+  styleUrls: ['./category.component.scss']
 })
 export class CategoryComponent implements OnInit {
+
   @Output() onAddCategory = new EventEmitter();
   @Output() onEditCategory = new EventEmitter();
-  categoryForm :any = FormGroup;
-  dialogAction:any = "Add";
-  action:any = "Add";
-  responseMessage:any;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public dialogData:any,
-  private formBuilder:FormBuilder,
-  private categoryService:CategoryService,
-  public dialogRef:MatDialogRef<CategoryComponent>,
-  private snackbarService:SnackbarService) { }
+  categoryForm!: FormGroup;
+
+  dialogAction = 'Add';
+  action = 'Add';
+  responseMessage: any;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public dialogData: any,
+    private formBuilder: FormBuilder,
+    private categoryService: CategoryService,
+    public dialogRef: MatDialogRef<CategoryComponent>,
+    private snackbarService: SnackbarService
+  ) {}
 
   ngOnInit(): void {
+
     this.categoryForm = this.formBuilder.group({
-      name:['',Validators.required],
+      name: ['', Validators.required]
     });
-    if(this.dialogData.action === 'Edit'){
-      this.dialogAction = "Edit";
-      this.action = "Update";
-      this.categoryForm.patchValue(this.dialogData.data);
+
+    if (this.dialogData?.action === 'Edit') {
+      this.dialogAction = 'Edit';
+      this.action = 'Update';
+
+      this.categoryForm.patchValue({
+        name: this.dialogData.data.name
+      });
     }
   }
 
-  handleSubmit(){
-    if(this.dialogAction === "Edit"){
-      this.edit()
+  handleSubmit(): void {
+
+    if (this.categoryForm.invalid) {
+      this.categoryForm.markAllAsTouched();
+      return;
     }
-    else{
+
+    if (this.dialogAction === 'Edit') {
+      this.edit();
+    } else {
       this.add();
     }
   }
 
+  add(): void {
 
-  add(){
-    var formData = this.categoryForm.value;
-    var data = {
-      name: formData.name
-    }
-    this.categoryService.add(data).subscribe((response:any)=>{
-      this.dialogRef.close(true);
-      this.onAddCategory.emit();
-      this.responseMessage = response.message;
-      this.snackbarService.openSnackBar(this.responseMessage,"success");
-    },(error:any)=>{
-      this.dialogRef.close(true);
-      if(error.error.message){
-        this.responseMessage = error.error.message;
+    const data = {
+      name: this.categoryForm.value.name
+    };
+
+    this.categoryService.add(data).subscribe({
+
+      next: (response: any) => {
+
+        this.responseMessage = response.message;
+
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          'success'
+        );
+
+        this.dialogRef.close(true);
+        this.onAddCategory.emit();
+
+      },
+
+      error: (error: any) => {
+
+        if (error.error?.message) {
+          this.responseMessage = error.error.message;
+        } else {
+          this.responseMessage = GlobalConstants.genericError;
+        }
+
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          GlobalConstants.error
+        );
       }
-      else{
-        this.responseMessage = GlobalConstants.genericError;
-      }
-      this.snackbarService.openSnackBar(this.responseMessage,GlobalConstants.error);
-    })
+
+    });
   }
 
-  edit(){
-    var formData = this.categoryForm.value;
-    var data = {
-      id:this.dialogData.data.id,
-      name: formData.name
-    }
-    this.categoryService.update(data).subscribe((response:any)=>{
-      this.dialogRef.close();
-      this.onEditCategory.emit();
-      this.responseMessage = response.message;
-      this.snackbarService.openSnackBar(this.responseMessage,"success");
-    },(error:any)=>{
-      this.dialogRef.close();
-      if(error.error.message){
-        this.responseMessage = error.error.message;
+  edit(): void {
+
+    const data = {
+      id: this.dialogData.data.id,
+      name: this.categoryForm.value.name
+    };
+
+    this.categoryService.update(data).subscribe({
+
+      next: (response: any) => {
+
+        this.responseMessage = response.message;
+
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          'success'
+        );
+
+        this.dialogRef.close(true);
+        this.onEditCategory.emit();
+
+      },
+
+      error: (error: any) => {
+
+        if (error.error?.message) {
+          this.responseMessage = error.error.message;
+        } else {
+          this.responseMessage = GlobalConstants.genericError;
+        }
+
+        this.snackbarService.openSnackBar(
+          this.responseMessage,
+          GlobalConstants.error
+        );
       }
-      else{
-        this.responseMessage = GlobalConstants.genericError;
-      }
-      this.snackbarService.openSnackBar(this.responseMessage,GlobalConstants.error);
-    })
+
+    });
   }
 }
