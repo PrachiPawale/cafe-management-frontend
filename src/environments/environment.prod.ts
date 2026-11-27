@@ -1,4 +1,4 @@
-export const environment = {
-  production: true,
-  apiUrl: "http://localhost:8080"
-};
+  export const environment = {
+    production: true,
+    apiUrl: "https://cafe-management-backend-v4af.onrender.com"
+  };
